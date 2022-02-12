@@ -1,0 +1,281 @@
+name: test
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+      devices:
+        description: 'build devices'
+        default: '["x64","newifi3","cr660x","k2"]'
+      clean:
+        description: 'clean ccache'
+        default: 'false'
+        
+
+  watch:
+    types: started
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/build-openwrt-cc.yml'
+      
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  DIY_P1_SH: diy.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: false
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: true
+  UPLOAD_RELEASE: false
+  TZ: Asia/Shanghai
+
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    name: Create Matrix
+    steps:
+      - name: Set Matrix
+        id: set-matrix
+        env:
+          MATRIX: ${{github.event.inputs.devices}}
+        run: |
+          if [ -z $MATRIX ]; then
+            MATRIX='["x64","newifi3","cr660x","k2"]'
+          fi
+          echo "::set-output name=matrix::$MATRIX"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }} 
+
+
+  build:
+    needs: create-matrix
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        device: ${{ fromJSON(needs.create-matrix.outputs.matrix) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 1000
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
+        
+
+    - name: Checkout cache
+      run: |
+        cd
+        curl -sL https://raw.githubusercontent.com/klever1988/nanopi-openwrt/zstd-bin/zstd | sudo tee /usr/bin/zstd > /dev/null
+        for i in {1..10}
+        do
+          curl -sL --fail https://github.com/klever1988/sshactions/releases/download/cache/openwrt.$DEVICE.img.zst.0$i || break
+        done | zstdmt -d -o openwrt.img || (truncate -s 30g openwrt.img && mkfs.btrfs -M openwrt.img)
+        LOOP_DEVICE=$(losetup -f) && echo "LOOP_DEVICE=$LOOP_DEVICE" >> $GITHUB_ENV
+        sudo losetup -P --direct-io $LOOP_DEVICE openwrt.img
+        mkdir openwrt && sudo mount -o nossd,compress=zstd $LOOP_DEVICE openwrt
+        if [ -d 'openwrt/.git' ]; then
+        cd openwrt && rm -f zerospace && git config --local user.email "action@github.com" && git config --local user.name "GitHub Action"
+        git fetch && git reset --hard origin/$BRANCH
+        else
+        sudo chown $USER:$(id -gn) openwrt && git clone $REPO_URL -b $REPO_BRANCH openwrt
+        fi
+
+       
+    - name: Load custom feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+        if [ -d 'feeds' ]; then
+          pushd feeds/packages; git checkout .; popd
+          pushd feeds/luci; git checkout .; popd
+          pushd feeds/routing; git checkout .; popd
+          pushd feeds/telephony; git checkout .; popd
+        fi
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+
+
+    - name: Load custom configuration
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e ${{matrix.device}}.config ] && mv ${{matrix.device}}.config openwrt/.config
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+        sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
+        #sed -i '/+kmod-dm/ s/$/ +libselinux +libsepol/' feeds/packages/utils/lvm2/Makefile
+        DateTime=`date -R`
+        sed -i "732 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
+        sed -i "709 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
+
+    - name: Clean build cache
+      if: ${{ github.event.inputs.device_clean == 'true' || github.event.inputs.device != '' }}
+      run: |
+        cd openwrt
+        df -h .
+        make package/clean
+        df -h .
+        
+    - name: Download package
+      id: package
+      run: |
+        cd openwrt
+        echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> .config; make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: Compile the firmware
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 || make -j1 V=s
+        echo "::set-output name=status::success"
+        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
+
+    - name: Organize files
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        rm -rf packages
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "::set-output name=status::success"
+
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
+
+    - name: Upload firmware to cowtransfer
+      id: cowtransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | bash -s beta
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+
+    - name: Upload firmware to WeTransfer
+      id: wetransfer
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+
+    - name: Generate release tag
+      id: tag
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        touch release.txt
+        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+        echo "::set-output name=status::success"
+
+    - name: Upload firmware to release
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: ${{ env.FIRMWARE }}/*
+
+
+    - name: Save cache state
+      if: env.TG
+      run: |
+        cd
+        sleep 60
+        sudo mount -o remount,compress=no,nodatacow,nodatasum openwrt
+        cd openwrt/; pv /dev/zero > zerospace || true; sync; rm -f zerospace; cd -
+        sleep 60
+        sudo umount openwrt
+        sudo losetup -d $LOOP_DEVICE
+        export AUTH="Authorization: token ${{ secrets.SEC_TOKEN }}"
+        export cache_path='github.com/repos/liwenjie119/OpenWrt-cache/releases'
+        export cache_repo_id='39020554'
+        ret=$(curl -sH "$AUTH" "https://api.$cache_path/tags/cache")
+        echo $ret | jq -r '.assets[] | select(.name | contains ("'$DEVICE'.img")).id' | \
+        xargs -n1 -i curl -X DELETE -H "$AUTH" "https://api.$cache_path/assets/{}"
+        echo $ret | jq -r '.assets[] | select(.name == "ib-'$DEVICE'.tar.xz").id' | \
+        xargs -n1 -i curl -X DELETE -H "$AUTH" "https://api.$cache_path/assets/{}"
+        #zstdmt -c --adapt --long openwrt.img | parallel --wc --block 1.99G --pipe \
+        #'curl -s --data-binary @- -H "$AUTH" -H "Content-Type: application/octet-stream" https://uploads.$cache_path/$cache_repo_id/assets?name=openwrt.'$DEVICE'.img.zst.0{#} > /dev/null'
+        zstdmt -c --long openwrt.img | split --numeric=1 -b 2000m - openwrt.$DEVICE.img.zst.
+        #for f in *img.zst*
+        #do
+        #  while true; do curl --data-binary @$f -H "$AUTH" -H 'Content-Type: application/octet-stream' "https://uploads.$cache_path/$cache_repo_id/assets?name=$f" && break || true; done
+        #done
+        ls *img.zst* ib-$DEVICE.tar.xz | parallel --wc 'while true; do curl -T {} -H "$AUTH" -H "Content-Type: application/octet-stream" "https://uploads.$cache_path/$cache_repo_id/assets?name={}" && break || true; done'
+
+    - name: Send tg notification
+      #if: env.TG
+      run: |
+        curl -k --data chat_id="${{secrets.TELEGRAM_CHAT_ID}}" --data "text=The ${{env.DEVICE}} build ran completed at ${{job.status}}." "https://api.telegram.org/bot${{secrets.TELEGRAM_BOT_TOKEN}}/sendMessage"
+
+    - name: debug SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: $${{ failure()&&(github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')}}
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+
+
+
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
