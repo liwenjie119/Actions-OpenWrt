@@ -20,7 +20,7 @@
 if [ -d 'package/myapp' ]; then
 	cd package/myapp/luci-app-adguardhome&&git checkout .&&git pull
 	cd ../zzu-minieap-openwrt&&git checkout .&&git pull
-	cd ../luci-app-godproxy&&git checkout .&&git pull
+	cd ../luci-app-ikoolproxy&&git checkout .&&git pull
 	cd ../OpenAppFiltergit checkout .&&git pull
 	cd ../aliyundrive-webdav&&git checkout .&&git pull
 	cd ../luci-app-argon-config&&git checkout .&&git pull
@@ -29,7 +29,7 @@ else
 git clone https://github.com/kongfl888/luci-app-adguardhome package/myapp/luci-app-adguardhome
 git clone https://github.com/2512500960/zzu-minieap-openwrt package/myapp/zzu-minieap-openwrt
 #git clone https://github.com/tty228/luci-app-serverchan package/myapp/luci-app-serverchan
-git clone https://github.com/project-lede/luci-app-godproxy package/myapp/luci-app-godproxy
+git clone https://github.com/project-lede/luci-app-ikoolproxy package/myapp/luci-app-ikoolproxy
 git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFilter
 #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt package/myapp/aliyundrive-webdav
 #luci-theme-argon
