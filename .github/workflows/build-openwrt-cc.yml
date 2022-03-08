@@ -130,7 +130,7 @@ jobs:
         #rm -rf ./feeds/packages/utils/runc/Makefile
         #svn export https://github.com/openwrt/packages/trunk/utils/runc/Makefile ./feeds/packages/utils/runc/Makefile
         #sed -i 's/^\s*$[(]call\sEnsureVendoredVersion/#&/' ./feeds/packages/utils/dockerd/Makefile
-        wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/openssh/patches
+        wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
 
     - name: Get architecture
       working-directory: ${{ github.workspace }}/openwrt
