@@ -37,3 +37,7 @@ rm -rf package/lean/luci-theme-argon
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
 git clone https://github.com/jerrykuku/luci-app-argon-config package/myapp/luci-app-argon-config
 fi
+
+
+#x86
+sed -i 's/PADDING="1"//g' target/linux/x86/image/Makefile
