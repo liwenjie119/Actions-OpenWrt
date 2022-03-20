@@ -40,4 +40,5 @@ fi
 
 
 #x86
-sed -i 's/PADDING="1"//g' target/linux/x86/image/Makefile
+#虚拟机升级受影响，暂时取消
+#sed -i 's/PADDING="1"//g' target/linux/x86/image/Makefile
