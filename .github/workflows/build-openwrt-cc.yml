@@ -14,10 +14,10 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      ssh:
-        description: 'SSH connection to Actions'
-        required: false
-        default: 'false'
+      #ssh:
+      #  description: 'SSH connection to Actions'
+      #  required: false
+      #  default: 'false'
       devices:
         description: 'build devices'
         default: '["x86_64","newifi-d2","cr660x","psg1218a"]'
@@ -126,10 +126,6 @@ jobs:
         DateTime=`date -R`
         sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
         sed -i "751 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
-        #暂时修复dockerd的runc依赖
-        #rm -rf ./feeds/packages/utils/runc/Makefile
-        #svn export https://github.com/openwrt/packages/trunk/utils/runc/Makefile ./feeds/packages/utils/runc/Makefile
-        #sed -i 's/^\s*$[(]call\sEnsureVendoredVersion/#&/' ./feeds/packages/utils/dockerd/Makefile
         wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
 
     - name: Get architecture
@@ -146,12 +142,12 @@ jobs:
         clean: ${{github.event.inputs.clean}}
         prefix: ${{ github.workspace }}/openwrt
 
-    - name: SSH connection to Actions
-      uses: P3TERX/ssh2actions@v1.0.0
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+#    - name: SSH connection to Actions
+#      uses: P3TERX/ssh2actions@v1.0.0
+#      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+#      env:
+#        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+#        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: Download package
       id: package
