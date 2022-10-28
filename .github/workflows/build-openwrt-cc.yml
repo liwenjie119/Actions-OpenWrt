@@ -264,7 +264,5 @@ jobs:
       with:
         max-age: 'P8D'
         delete_tags: true
-        delete_tag_pattern: ${{ env.DEVICE_NAME }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
