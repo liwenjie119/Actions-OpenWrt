@@ -263,7 +263,7 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         max-age: 'P8D'
-        delete_tags: true
+        delete-tags: true
         token: '${{ github.token }}'
 
 
