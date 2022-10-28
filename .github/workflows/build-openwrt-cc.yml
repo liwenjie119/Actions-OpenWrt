@@ -253,16 +253,16 @@ jobs:
 
 
     - name: Delete workflow runs
-      uses: GitRML/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@v2
       with:
         retain_days: 1
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.2.0
+      uses: freenet-actions/delete-old-releases@v1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 3
+        max-age: 'P8D'
         delete_tags: true
         delete_tag_pattern: ${{ env.DEVICE_NAME }}
       env:
