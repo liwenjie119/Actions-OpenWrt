@@ -22,9 +22,9 @@ if [ -d 'package/myapp' ]; then
 	cd ../zzu-minieap-openwrt&&git checkout .&&git pull
 	cd ../luci-app-ikoolproxy&&git checkout .&&git pull
 	cd ../OpenAppFiltergit checkout .&&git pull
-	cd ../aliyundrive-webdav&&git checkout .&&git pull
-	cd ../luci-app-argon-config&&git checkout .&&git pull
-	cd ../luci-theme-argon&&git checkout .&&git pull
+	#cd ../aliyundrive-webdav&&git checkout .&&git pull
+	#cd ../luci-app-argon-config&&git checkout .&&git pull
+	#cd ../luci-theme-argon&&git checkout .&&git pull
 	cd ../../../
 else
 git clone https://github.com/kongfl888/luci-app-adguardhome package/myapp/luci-app-adguardhome
@@ -34,9 +34,9 @@ git clone https://github.com/yaof2/luci-app-ikoolproxy package/myapp/luci-app-ik
 git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFilter
 #svn co https://github.com/messense/aliyundrive-webdav/trunk/openwrt package/myapp/aliyundrive-webdav
 #luci-theme-argon
-rm -rf feeds/luci/themes/luci-theme-argon  
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
-git clone https://github.com/jerrykuku/luci-app-argon-config package/myapp/luci-app-argon-config
+#rm -rf feeds/luci/themes/luci-theme-argon  
+#git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
+#git clone https://github.com/jerrykuku/luci-app-argon-config package/myapp/luci-app-argon-config
 fi
 
 
