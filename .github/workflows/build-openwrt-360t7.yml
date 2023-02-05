@@ -39,7 +39,7 @@ env:
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default-360-t7-108M
-  DIY_P1_SH: diy.sh
+  DIY_P1_SH: diy-360-t7-108M.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
