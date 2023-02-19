@@ -46,6 +46,7 @@ env:
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
+  MATRIX: ${{github.event.inputs.devices}}
   TZ: Asia/Shanghai
 
 jobs:
@@ -55,7 +56,6 @@ jobs:
     steps:
       - name: Set Matrix
         id: set-matrix
-        with: 
           MATRIX: ${{github.event.inputs.devices}}
         run: |
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
