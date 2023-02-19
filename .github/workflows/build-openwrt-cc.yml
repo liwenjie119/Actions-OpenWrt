@@ -56,12 +56,12 @@ jobs:
       - name: Set Matrix
         id: set-matrix
         env:
-          MATRIX: ${{ github.event.inputs.devices }}
+          MATRIXS: ${{ github.event.inputs.devices }}
         run: |
-          if [ -z $MATRIX ]; then
-            MATRIX='["x86_64","newifi-d2","cr660x","psg1218a"]'
+          if [ -z $MATRIXS ]; then
+            MATRIXS='["x86_64","cr660x"]'
           fi
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }} 
 
