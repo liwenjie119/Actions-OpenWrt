@@ -58,7 +58,7 @@ jobs:
         env:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
-          MATRIXS = ${{ github.event.inputs.devices }}
+          MATRIXS=${{ github.event.inputs.devices }}
           if [ -z $MATRIXS ]; then
             MATRIXS='["x86_64","cr660x"]'
           fi
