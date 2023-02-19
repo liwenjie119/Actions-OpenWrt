@@ -18,7 +18,7 @@ on:
       #  description: 'SSH connection to Actions'
       #  required: false
       #  default: 'false'
-      devices:
+      architecture:
         description: 'build devices'
         default: '["x86_64","cr660x"]'
       clean:
@@ -56,7 +56,7 @@ jobs:
       - name: Set Matrix
         id: set-matrix
         run: |
-          MATRIX='${{github.event.inputs.devices}}'
+          MATRIX='${{github.event.inputs.architecture}}'
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }} 
