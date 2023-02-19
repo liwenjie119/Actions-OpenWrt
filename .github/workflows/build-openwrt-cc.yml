@@ -56,7 +56,6 @@ jobs:
     steps:
       - name: Set Matrix
         id: set-matrix
-          MATRIX: ${{github.event.inputs.devices}}
         run: |
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
     outputs:
