@@ -56,7 +56,7 @@ jobs:
       - name: Set Matrix
         id: set-matrix
         run: |
-          MATRIX='${{github.event.inputs.architecture}}'
+          MATRIX = "${{github.event.inputs.architecture}}"
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }} 
