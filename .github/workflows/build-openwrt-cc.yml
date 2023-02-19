@@ -46,7 +46,6 @@ env:
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: true
   UPLOAD_RELEASE: true
-  MATRIX: ${{github.event.inputs.devices}}
   TZ: Asia/Shanghai
 
 jobs:
@@ -56,7 +55,12 @@ jobs:
     steps:
       - name: Set Matrix
         id: set-matrix
+        env:
+          MATRIX: ${{ github.event.inputs.devices }}
         run: |
+          if [ -z $MATRIX ]; then
+            MATRIX='["x86_64","newifi-d2","cr660x","psg1218a"]'
+          fi
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }} 
