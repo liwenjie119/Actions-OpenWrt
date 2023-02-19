@@ -33,7 +33,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-openwrt-cc.yml'
+      - '.github/workflows/build-openwrt-360t7.yml'
       
 env:
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
