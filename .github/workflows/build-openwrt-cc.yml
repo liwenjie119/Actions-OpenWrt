@@ -20,7 +20,7 @@ on:
       #  default: 'false'
       devices:
         description: 'build devices'
-        default: '["x86_64","newifi-d2","cr660x"]'
+        default: '["x86_64","cr660x"]'
       clean:
         description: 'clean ccache'
         default: 'false'
