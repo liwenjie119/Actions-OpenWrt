@@ -12,17 +12,6 @@ name: Build OpenWrt-cc
 
 on:
   repository_dispatch:
-    inputs:
-      #ssh:
-      #  description: 'SSH connection to Actions'
-      #  required: false
-      #  default: 'false'
-      devices:
-        description: '["x86_64","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64","cr660x"]'
-      clean:
-        description: 'clean ccache'
-        default: 'false'
   workflow_dispatch:
     inputs:
       #ssh:
