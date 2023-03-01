@@ -34,6 +34,7 @@ on:
       - main
     paths:
       - '.github/workflows/build-openwrt-360t7.yml'
+      - '360-t7-108M.config'
       
 env:
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
