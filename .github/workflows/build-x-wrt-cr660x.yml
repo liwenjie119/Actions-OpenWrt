@@ -33,7 +33,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-openwrt-cr660x.yml'
+      - '.github/workflows/build-x-wrt-cr660x.yml'
       - 'cr660x.config'
       
 env:
@@ -232,7 +232,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=X-Wrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
