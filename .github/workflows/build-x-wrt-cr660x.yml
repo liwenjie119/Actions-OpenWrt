@@ -34,7 +34,7 @@ on:
       - main
     paths:
       - '.github/workflows/build-openwrt-cr660x.yml'
-      - 'cr660x1.config'
+      - 'cr660x.config'
       
 env:
   REPO_URL: https://github.com/x-wrt/x-wrt
