@@ -20,7 +20,7 @@ on:
       #  default: 'false'
       devices:
         description: '["x86_64","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64","cr660x"]'
+        default: '["x86_64"]'
       clean:
         description: 'clean ccache'
         default: 'false'
@@ -59,7 +59,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXS='["x86_64","cr660x"]'
+            MATRIXS='["x86_64"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
