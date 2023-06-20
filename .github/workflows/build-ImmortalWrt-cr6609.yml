@@ -39,7 +39,7 @@ on:
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
-  FEEDS_CONF: feeds.conf.default-cr660x
+  FEEDS_CONF: 
   DIY_P1_SH: diy.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -121,8 +121,8 @@ jobs:
     - name: Update feeds
       run: |
         cd openwrt && ./scripts/feeds update -a
-        rm -rf feeds/luci/applications/luci-app-v2ray-server
-        svn co https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
+        #rm -rf feeds/luci/applications/luci-app-v2ray-server
+        #svn co https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
