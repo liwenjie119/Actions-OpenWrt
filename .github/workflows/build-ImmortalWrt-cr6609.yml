@@ -33,7 +33,7 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-x-wrt-cr660x.yml'
+      - '.github/workflows/build-ImmortalWrt-cr6609.yml'
       - 'cr660x.config'
       
 env:
