@@ -146,13 +146,14 @@ jobs:
       run: |
         TARGET_DEVICE_ARCH="$(grep "^CONFIG_TARGET_.*=y$" ".config" | head -n 1 | sed 's/^CONFIG_TARGET_//g' | sed 's/=y//g'| awk -F '_' '{print $1}')"
         echo "TARGET_DEVICE_ARCH=${TARGET_DEVICE_ARCH}" >>$GITHUB_ENV
-        
+        echo "MIXKEY=${{matrix.device}}" >>$GITHUB_ENV
         
     - name: cache
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: ${{ env.TARGET_DEVICE_ARCH }}
+        #mixkey: ${{ env.TARGET_DEVICE_ARCH }}
+        mixkey: ${{ env.MIXKEY }}
         toolchain: 'true'
         clean: ${{github.event.inputs.clean}}
         prefix: ${{ github.workspace }}/openwrt
