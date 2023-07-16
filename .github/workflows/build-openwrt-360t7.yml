@@ -121,8 +121,8 @@ jobs:
     - name: Update feeds
       run: |
         cd openwrt && ./scripts/feeds update -a
-        #rm -rf feeds/luci/applications/luci-app-v2ray-server
-        #svn co https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
+        rm -rf feeds/luci/applications/luci-app-v2ray-server
+        svn co https://github.com/coolsnowwolf/luci/trunk/applications/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
