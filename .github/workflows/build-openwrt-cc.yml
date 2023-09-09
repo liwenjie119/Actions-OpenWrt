@@ -136,7 +136,7 @@ jobs:
         sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
         sed -i "709 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
         wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
-        cd feeds/packages&&git revirt 9a77bc5 --no-edit
+        cd feeds/packages&&git revert 9a77bc5 --no-edit
         
 
     - name: Get architecture
