@@ -21,7 +21,7 @@ if [ -d 'package/myapp' ]; then
 	cd package/myapp/luci-app-adguardhome&&git checkout .&&git pull
 	cd ../zzu-minieap-openwrt&&git checkout .&&git pull
 	cd ../luci-app-ikoolproxy&&git checkout .&&git pull
-	cd ../OpenAppFiltergit checkout .&&git pull
+	cd ../OpenAppFilter&&git checkout .&&git pull
 	#cd ../aliyundrive-webdav&&git checkout .&&git pull
 	#cd ../luci-app-argon-config&&git checkout .&&git pull
 	#cd ../luci-theme-argon&&git checkout .&&git pull
