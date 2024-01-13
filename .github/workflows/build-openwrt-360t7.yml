@@ -122,9 +122,7 @@ jobs:
       run: |
         cd openwrt && ./scripts/feeds update -a
         rm -rf feeds/luci/applications/luci-app-v2ray-server
-        git submodule add https://github.com/coolsnowwolf/luci/tree/master/applications/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
-        git submodule init
-        git submodule update
+
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
