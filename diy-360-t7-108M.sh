@@ -13,9 +13,29 @@
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
+## 添加额外软件包
+#merge_package() {
+#	# 参数1是分支名, 参数2是子目录, 参数3是目标目录, 参数4仓库地址
+#	trap 'rm -rf "$TMP_DIR"' 0 1 2 3
+#	TMP_DIR="$(mktemp -d)" || exit 1
+#        ORI_DIR="$PWD"
+#	[ -d "$3" ] || mkdir -p "$3"
+#	TGT_DIR="$(cd "$3"; pwd)"
+#	cd "$TMP_DIR" && \
+#	git init >/dev/null 2>&1 && \
+#	git remote add -f origin "$4" >/dev/null 2>&1 && \
+#	git checkout "remotes/origin/$1" -- "$2" && \
+#	cd "$2" && cp -a . "$TGT_DIR/" && cd "$ORI_DIR"
+#}
+#
+#
+## v2ray-server 
+#merge_package "master" "applications/luci-app-v2ray-server" "package/myapp/luci-app-v2ray-server" "https://github.com/coolsnowwolf/luci"
+
 function merge_package(){
-    repo=echo $1 | rev | cut -d'/' -f 1 | rev
-    pkg=echo $2 | rev | cut -d'/' -f 1 | rev
+    repo=`echo $1 | rev | cut -d'/' -f 1 | rev`
+    pkg=`echo $2 | rev | cut -d'/' -f 1 | rev`
+    # find package/ -follow -name $pkg -not -path "package/custom/*" | xargs -rt rm -rf
     git clone --depth=1 --single-branch $1
     mv $2 package/myapp/
     rm -rf $repo
