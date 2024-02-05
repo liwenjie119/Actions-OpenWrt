@@ -120,7 +120,7 @@ jobs:
         sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds 
         ln -s /mnt/openwrt/dl /workdir/openwrt/dl
         ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds
-        # ln -s /mnt/openwrt/staging_dir ./staging_dir
+        ln -s /mnt/openwrt/staging_dir ./staging_dir
         df -h
         
         
