@@ -119,7 +119,7 @@ jobs:
         # 利用挂载在 /mnt/ 的 14G 额外空间:
         sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds 
         ln -s /mnt/openwrt/dl /workdir/openwrt/dl
-        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds
+        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds /mnt/openwrt/build_dir
         ln -s /mnt/openwrt/build_dir ./build_dir
         df -h
         
