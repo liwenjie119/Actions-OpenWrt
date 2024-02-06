@@ -156,7 +156,6 @@ jobs:
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        pwd&&ls -l
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
@@ -175,7 +174,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
-        #sed -i '/+kmod-dm/ s/$/ +libselinux +libsepol/' feeds/packages/utils/lvm2/Makefile
         DateTime=`date -R`
         sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
         sed -i "709 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
@@ -277,7 +275,7 @@ jobs:
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: ncipollo/release-action@v1.4.0
+      uses: ncipollo/release-action@v1.14.0
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

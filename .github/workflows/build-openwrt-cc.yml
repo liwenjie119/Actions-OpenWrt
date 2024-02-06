@@ -254,7 +254,7 @@ jobs:
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: ncipollo/release-action@v1.4.0
+      uses: ncipollo/release-action@v1.14.0
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
