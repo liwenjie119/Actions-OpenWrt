@@ -75,9 +75,7 @@ jobs:
     timeout-minutes: 1000
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
-      
+
     - name: Check Server Performance
       run: |
         echo "警告⚠"
@@ -146,6 +144,8 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
 
+    - name: Checkout
+      uses: actions/checkout@main
 
     - name: Clone source code
       working-directory: ./
