@@ -117,9 +117,9 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         # 利用挂载在 /mnt/ 的 14G 额外空间:
-        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds 
+        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/build_dir
         ln -s /mnt/openwrt/dl /workdir/openwrt/dl
-        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds /mnt/openwrt/build_dir
+        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds
         ln -s /mnt/openwrt/build_dir ./build_dir
         df -h
         
