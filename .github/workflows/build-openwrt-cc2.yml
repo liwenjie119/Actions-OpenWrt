@@ -9,7 +9,7 @@
 # https://github.com/liwenjie119/Actions-OpenWrt
 # 硬盘释放来自于https://github.com/dzlea/ActionsBuildOpenWRT
 
-name: Build OpenWrt-cc
+name: Build OpenWrt-cc2
 
 on:
   repository_dispatch:
@@ -30,7 +30,7 @@ on:
     branches:
       - dev
     paths:
-      - '.github/workflows/build-openwrt-cc.yml'
+      - '.github/workflows/build-openwrt-cc2.yml'
       
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
