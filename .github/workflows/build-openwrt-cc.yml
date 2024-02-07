@@ -7,6 +7,7 @@
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
 # https://github.com/liwenjie119/Actions-OpenWrt
+# 硬盘释放来自于https://github.com/dzlea/ActionsBuildOpenWRT
 
 name: Build OpenWrt-cc
 
@@ -14,10 +15,6 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      #ssh:
-      #  description: 'SSH connection to Actions'
-      #  required: false
-      #  default: 'false'
       devices:
         description: '["x86_64","newifi-d2","cr660x","psg1218a"]'
         default: '["x86_64"]'
@@ -31,7 +28,7 @@ on:
     types: started
   push:
     branches:
-      - dev
+      - main
     paths:
       - '.github/workflows/build-openwrt-cc.yml'
       
@@ -78,9 +75,7 @@ jobs:
     timeout-minutes: 1000
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
-      
+
     - name: Check Server Performance
       run: |
         echo "警告⚠"
@@ -95,35 +90,68 @@ jobs:
         echo "--------------------------硬盘信息--------------------------"
         echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
         
+    - name: "Optimize Disk Space"
+      uses: "hugoalh/disk-space-optimizer-ghaction@v0.8.0"
+      with:
+        operate_sudo: "True"
+        general_include: ".+"
+        general_exclude: |-
+          ^GCC$
+          ^G\+\+$
+          Clang
+          LLVM
+        docker_include: ".+"
+        docker_prune: "True"
+        docker_clean: "True"
+        apt_prune: "True"
+        apt_clean: "True"
+        homebrew_prune: "True"
+        homebrew_clean: "True"
+        npm_prune: "True"
+        npm_clean: "True"
+        os_swap: "True"
+
+    - name: Freeing up disk space
+      uses: easimon/maximize-build-space@master
+      with: 
+        root-reserve-mb: 2048
+        swap-size-mb: 1
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+
+    - name: Free up disk space complete
+      run: |
+        echo "Free up disk space complete"
+        echo "=============================================================================="
+        df -hT
+        echo "=============================================================================="
+       
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        docker rmi `docker images -q`
         sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android /opt/ghc \
         /usr/share/dotnet /usr/local/graalvm /usr/local/.ghcup \
-        /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules        sudo -E apt-get -y purge azure-cli* ghc* zulu* hhvm* llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* docker* dotnet* moby* snapd* || true
+        /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
+        sudo -E apt-get -y purge azure-cli* ghc* zulu* hhvm* llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* docker* dotnet* moby* snapd* || true
         sudo -E apt-get update
         sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
+
+    - name: Checkout
+      uses: actions/checkout@main
 
     - name: Clone source code
-      working-directory: /workdir
+      working-directory: ./
       run: |
-        df -h
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        # 利用挂载在 /mnt/ 的 14G 额外空间:
-        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/build_dir
-        ln -s /mnt/openwrt/dl /workdir/openwrt/dl
-        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds
-        ln -s /mnt/openwrt/build_dir /workdir/openwrt/build_dir
-        df -h
-        
+        git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
+
         
     - name: Load custom feeds
       run: |
@@ -146,7 +174,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
-        #sed -i '/+kmod-dm/ s/$/ +libselinux +libsepol/' feeds/packages/utils/lvm2/Makefile
         DateTime=`date -R`
         sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
         sed -i "709 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
@@ -170,12 +197,6 @@ jobs:
         clean: ${{github.event.inputs.clean}}
         prefix: ${{ github.workspace }}/openwrt
 
-#    - name: SSH connection to Actions
-#      uses: P3TERX/ssh2actions@v1.0.0
-#      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-#      env:
-#        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-#        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: Download package
       id: package
