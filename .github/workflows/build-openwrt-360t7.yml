@@ -116,8 +116,8 @@ jobs:
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
-        rm -rf feeds/luci/applications/luci-app-v2ray-server
         $GITHUB_WORKSPACE/$DIY_P1_SH
+        rm -rf feeds/luci/applications/luci-app-v2ray-server
 
     - name: Update feeds
       run: |
@@ -126,7 +126,7 @@ jobs:
 
 
     - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
+      run: cd openwrt &&./scripts/feeds update -a&& ./scripts/feeds install -a
 
     - name: Load custom configuration
       run: |
