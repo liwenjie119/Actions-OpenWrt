@@ -123,6 +123,7 @@ jobs:
       run: |
         cd openwrt && ./scripts/feeds update -a
         rm -rf feeds/luci/applications/luci-app-v2ray-server
+        mv package/myapp/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
 
 
     - name: Install feeds
