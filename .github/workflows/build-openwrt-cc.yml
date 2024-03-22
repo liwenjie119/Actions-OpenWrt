@@ -189,7 +189,7 @@ jobs:
         
         
     - name: cache
-      uses: klever1988/cachewrtbuild@main
+      uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'true'
         mixkey: ${{ env.TARGET_DEVICE_ARCH }}
