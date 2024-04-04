@@ -141,7 +141,7 @@ jobs:
         DateTime=`date -R`
         #sed -i "751 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
         wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
-        rm feeds/packages/net/xray-core/Makefile&&wget https://raw.githubusercontent.com/immortalwrt/packages/master/net/xray-core/Makefile -P ./feeds/packages/net/xray-core
+        #rm feeds/packages/net/xray-core/Makefile&&wget https://raw.githubusercontent.com/immortalwrt/packages/master/net/xray-core/Makefile -P ./feeds/packages/net/xray-core
 
     - name: Get architecture
       working-directory: ${{ github.workspace }}/openwrt
