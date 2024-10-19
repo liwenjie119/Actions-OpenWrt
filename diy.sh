@@ -32,7 +32,7 @@ git clone https://github.com/2512500960/zzu-minieap-openwrt package/myapp/zzu-mi
 #git clone https://github.com/tty228/luci-app-serverchan package/myapp/luci-app-serverchan
 git clone https://github.com/yaof2/luci-app-ikoolproxy package/myapp/luci-app-ikoolproxy
 git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFilter
-git clone https://github.com/liwenjie119/luci-app-v2ray-server package/myapp/luci-app-v2ray-server
+#git clone https://github.com/liwenjie119/luci-app-v2ray-server package/myapp/luci-app-v2ray-server
 #luci-theme-argon
 #rm -rf feeds/luci/themes/luci-theme-argon  
 #git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
