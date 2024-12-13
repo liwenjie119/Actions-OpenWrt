@@ -18,7 +18,6 @@
 #sed -i '$a src-git helloworld https://github.com/fw876/helloworld' feeds.conf.default
 #sed -i '$a src-git lienol https://github.com/Lienol/openwrt-package' feeds.conf.default
 if [ -d 'package/myapp' ]; then
-	cd package/myapp/luci-app-adguardhome&&git checkout .&&git pull
 	cd ../zzu-minieap-openwrt&&git checkout .&&git pull
 	cd ../luci-app-ikoolproxy&&git checkout .&&git pull
 	cd ../OpenAppFilter&&git checkout .&&git pull
@@ -27,7 +26,6 @@ if [ -d 'package/myapp' ]; then
 	#cd ../luci-theme-argon&&git checkout .&&git pull
 	cd ../../../
 else
-git clone https://github.com/kongfl888/luci-app-adguardhome package/myapp/luci-app-adguardhome
 git clone https://github.com/2512500960/zzu-minieap-openwrt package/myapp/zzu-minieap-openwrt
 git clone https://github.com/tty228/luci-app-wechatpush package/myapp/luci-app-wechatpush
 git clone https://github.com/yaof2/luci-app-ikoolproxy package/myapp/luci-app-ikoolproxy
