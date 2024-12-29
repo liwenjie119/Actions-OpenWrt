@@ -55,7 +55,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXD='["cr660x"]'
+            MATRIXS='["cr660x"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
