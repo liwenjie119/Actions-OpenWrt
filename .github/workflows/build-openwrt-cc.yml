@@ -16,8 +16,8 @@ on:
   workflow_dispatch:
     inputs:
       devices:
-        description: '["x86_64","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64"]'
+        description: '["x86_64","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
+        default: '["x86_64","JDCloud-AX1800-Pro"]'
       clean:
         description: 'clean ccache'
         default: 'false'
@@ -32,6 +32,7 @@ on:
     paths:
       - '.github/workflows/build-openwrt-cc.yml'
       - 'x86_64.config'
+      - 'JDCloud-AX1800-Pro.config'
       - 'diy.sh'
       
 env:
@@ -58,7 +59,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXS='["x86_64"]'
+            MATRIXS='["x86_64","JDCloud-AX1800-Pro"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
