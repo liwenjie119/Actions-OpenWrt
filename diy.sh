@@ -36,7 +36,10 @@ git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFil
 #git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
 #git clone https://github.com/jerrykuku/luci-app-argon-config package/myapp/luci-app-argon-config
 fi
-
+#增加版本日期
+sed -i "54d" package/lean/default-settings/files/zzz-default-settings
+current_time=$(date +"%Y-%m-%d %H:%M:%S")
+sed -i "53a echo DISTRIB_REVISION='R25.1.1 ${current_time}' >> /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
 
 #x86
 #虚拟机升级受影响，暂时取消
