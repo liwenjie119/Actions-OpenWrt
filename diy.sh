@@ -38,7 +38,7 @@ git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFil
 fi
 #增加版本日期
 #sed -i "54d" package/lean/default-settings/files/zzz-default-settings
-current_time=$(date +"%Y-%m-%d %H:%M:%S")
+current_time=$(TZ=UTC-8 date +"%Y-%m-%d %H:%M:%S")
 #sed -i "53a echo DISTRIB_REVISION='R25.1.1 ${current_time}' >> /etc/openwrt_release" package/lean/default-settings/files/zzz-default-settings
 sed -i "s/\(DISTRIB_REVISION='\([^']*\)\)'/\1 $current_time'/" package/lean/default-settings/files/zzz-default-settings
 #x86
