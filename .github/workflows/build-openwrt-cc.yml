@@ -16,8 +16,8 @@ on:
   workflow_dispatch:
     inputs:
       devices:
-        description: '["x86_64","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64","JDCloud-AX1800-Pro"]'
+        description: '["x86_64","360t7","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
+        default: '["x86_64","360t7","JDCloud-AX1800-Pro"]'
       clean:
         description: 'clean ccache'
         default: 'false'
@@ -33,6 +33,7 @@ on:
       - '.github/workflows/build-openwrt-cc.yml'
       - 'x86_64.config'
       - 'JDCloud-AX1800-Pro.config'
+      - '360t7.config'
       - 'diy.sh'
       
 env:
@@ -253,7 +254,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=lean-OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
