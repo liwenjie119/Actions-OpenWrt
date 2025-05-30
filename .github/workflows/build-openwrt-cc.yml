@@ -60,7 +60,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXS='["x86_64","JDCloud-AX1800-Pro"]'
+            MATRIXS='["x86_64","360t7","JDCloud-AX1800-Pro"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
