@@ -118,7 +118,7 @@ jobs:
     - name: Freeing up disk space
       #uses: easimon/maximize-build-space@master
       #uses: awawa42/maximize-build-space@master
-      uses: justinthelaw/maximize-github-runner-space@latest
+      uses: justinthelaw/maximize-github-runner-space@main
       with: 
         root-reserve-mb: 5120
         #swap-size-mb: 2048
