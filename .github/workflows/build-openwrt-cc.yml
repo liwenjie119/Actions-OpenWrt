@@ -263,7 +263,7 @@ jobs:
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: ncipollo/release-action@v1.15.0
+      uses: ncipollo/release-action@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -280,7 +280,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@v2
+      uses: freenet-actions/delete-old-releases@main
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         max-age: 'P8D'
