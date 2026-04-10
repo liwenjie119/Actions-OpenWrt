@@ -194,7 +194,7 @@ jobs:
         #mixkey: ${{ env.TARGET_DEVICE_ARCH }}
         mixkey: ${{ env.MIXKEY }}
         toolchain: 'true'
-        clean: ${{github.event.inputs.clean}}
+        clean: ${{ github.event.inputs.clean || 'false' }}
         prefix: ${{ github.workspace }}/openwrt
 
 
