@@ -174,7 +174,7 @@ jobs:
     - name: Install feeds
       run: |
         cd openwrt &&./scripts/feeds update -a
-        #cp ./feeds/helloworld/xray-core/Makefile ./feeds/packages/net/xray-core/Makefile
+        cp ./feeds/helloworld/xray-core/Makefile ./feeds/packages/net/xray-core/Makefile
         ./scripts/feeds install -a
 
     - name: Load custom configuration
@@ -200,9 +200,9 @@ jobs:
     - name: cache
       uses: stupidloud/cachewrtbuild@main
       with:
-        ccache: 'true'
+        ccache: true
         mixkey: ${{ env.TARGET_DEVICE_ARCH }}
-        toolchain: 'true'
+        toolchain: true
         clean: ${{github.event.inputs.clean}}
         prefix: ${{ github.workspace }}/openwrt
 
