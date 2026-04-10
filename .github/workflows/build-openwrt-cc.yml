@@ -203,7 +203,7 @@ jobs:
         ccache: true
         mixkey: ${{ env.TARGET_DEVICE_ARCH }}
         toolchain: true
-        clean: ${{github.event.inputs.clean}}
+        clean: '${{github.event.inputs.clean}}'
         prefix: ${{ github.workspace }}/openwrt
 
 
