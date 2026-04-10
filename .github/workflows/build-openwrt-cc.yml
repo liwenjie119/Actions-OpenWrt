@@ -200,10 +200,10 @@ jobs:
     - name: cache
       uses: stupidloud/cachewrtbuild@main
       with:
-        ccache: true
+        ccache: 'true'
         mixkey: ${{ env.TARGET_DEVICE_ARCH }}
-        toolchain: true
-        clean: '${{github.event.inputs.clean}}'
+        toolchain: 'true'
+        clean: ${{ github.event.inputs.clean || 'false' }}
         prefix: ${{ github.workspace }}/openwrt
 
 
