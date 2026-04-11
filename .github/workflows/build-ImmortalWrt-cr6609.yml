@@ -90,7 +90,7 @@ jobs:
         echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
         
     - name: "Optimize Disk Space"
-      uses: "hugoalh/disk-space-optimizer-ghaction@v0.8.1"
+      uses: "hugoalh/disk-space-optimizer-ghaction@main"
       with:
         operate_sudo: "True"
         general_include: ".+"
@@ -115,7 +115,7 @@ jobs:
       uses: awawa42/maximize-build-space@master
       with: 
         root-reserve-mb: 5120
-        swap-size-mb: 1
+        swap-size-mb: 2048
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
@@ -255,7 +255,7 @@ jobs:
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: ncipollo/release-action@v1.15.0
+      uses: ncipollo/release-action@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -272,7 +272,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@v2
+      uses: freenet-actions/delete-old-releases@main
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         max-age: 'P8D'
