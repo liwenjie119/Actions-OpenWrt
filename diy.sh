@@ -32,7 +32,7 @@ git clone https://github.com/yaof2/luci-app-ikoolproxy package/myapp/luci-app-ik
 git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFilter
 #git clone https://github.com/sirpdboy/luci-app-watchdog package/myapp/luci-app-watchdog&&chmod -R 777 package/myapp/luci-app-watchdog
 #git clone https://github.com/sirpdboy/luci-app-eqosplus package/myapp/luci-app-eqosplus&&chmod -R 777 package/myapp/luci-app-eqosplus
-#git clone https://github.com/liwenjie119/luci-app-v2ray-server package/myapp/luci-app-v2ray-server
+git clone https://github.com/liwenjie119/luci-app-v2ray-server package/myapp/luci-app-v2ray-server
 #luci-theme-argon
 #rm -rf feeds/luci/themes/luci-theme-argon  
 #git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/myapp/luci-theme-argon
