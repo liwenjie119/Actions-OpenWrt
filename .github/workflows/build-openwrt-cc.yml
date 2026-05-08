@@ -175,6 +175,7 @@ jobs:
       run: |
         cd openwrt &&./scripts/feeds update -a
         #cp ./feeds/helloworld/xray-core/Makefile ./feeds/packages/net/xray-core/Makefile
+        rm -rf feeds/luci/applications/luci-app-adguardhome
         ./scripts/feeds install -a
 
     - name: Load custom configuration
