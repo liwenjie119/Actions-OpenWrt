@@ -43,7 +43,7 @@ function merge_package(){
 rm -rf package/myapp; mkdir package/myapp
 
 # v2ray-server 
-merge_package https://github.com/coolsnowwolf/luci luci/applications/luci-app-v2ray-server
+git clone https://github.com/liwenjie119/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
 
 
 # Add a feed source

@@ -128,7 +128,8 @@ jobs:
         echo "=============================================================================="
         df -hT
         echo "=============================================================================="
-       
+        df -h /home/runner
+        
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -168,7 +169,14 @@ jobs:
         ./scripts/feeds update -a
 
     - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a&&./scripts/feeds install -a
+      run: |
+        cd openwrt &&./scripts/feeds update -a
+        #cp ./feeds/helloworld/xray-core/Makefile ./feeds/packages/net/xray-core/Makefile
+        rm -rf feeds/luci/applications/luci-app-adguardhome
+        git clone https://github.com/w9315273/luci-app-adguardhome feeds/luci/applications/luci-app-adguardhome
+        ./scripts/feeds install -a
+        npm install -g npm@latest
+
 
     - name: Load custom configuration
       run: |
@@ -213,6 +221,7 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
+        cat /home/runner/.npm/_logs/latest.log
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
