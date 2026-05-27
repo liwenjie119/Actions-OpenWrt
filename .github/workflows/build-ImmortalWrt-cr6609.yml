@@ -175,7 +175,6 @@ jobs:
         rm -rf feeds/luci/applications/luci-app-adguardhome
         git clone https://github.com/w9315273/luci-app-adguardhome feeds/luci/applications/luci-app-adguardhome
         ./scripts/feeds install -a
-        npm install -g npm@latest
 
 
     - name: Load custom configuration
