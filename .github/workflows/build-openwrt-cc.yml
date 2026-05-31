@@ -178,6 +178,7 @@ jobs:
         rm -rf feeds/luci/applications/luci-app-adguardhome
         git clone https://github.com/w9315273/luci-app-adguardhome feeds/luci/applications/luci-app-adguardhome
         ./scripts/feeds install -a
+        sed -i 's|-C $(PKG_BUILD_DIR)$|CC="$(TARGET_CC_NOCACHE)"|' package/feeds/packages/vlmcsd/Makefile
 
     - name: Load custom configuration
       run: |
