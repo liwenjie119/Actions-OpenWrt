@@ -128,7 +128,6 @@ jobs:
         echo "=============================================================================="
         df -hT
         echo "=============================================================================="
-        df -h /home/runner
         
     - name: Initialization environment
       env:
@@ -158,7 +157,7 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        #[ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
@@ -192,14 +191,12 @@ jobs:
       run: |
         TARGET_DEVICE_ARCH="$(grep "^CONFIG_TARGET_.*=y$" ".config" | head -n 1 | sed 's/^CONFIG_TARGET_//g' | sed 's/=y//g'| awk -F '_' '{print $1}')"
         echo "TARGET_DEVICE_ARCH=${TARGET_DEVICE_ARCH}" >>$GITHUB_ENV
-        echo "MIXKEY=${{matrix.device}}" >>$GITHUB_ENV
         
     - name: cache
       uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'true'
-        #mixkey: ${{ env.TARGET_DEVICE_ARCH }}
-        mixkey: ${{ env.MIXKEY }}
+        mixkey: ${{ env.TARGET_DEVICE_ARCH }}
         toolchain: 'true'
         clean: ${{ github.event.inputs.clean || 'false' }}
         prefix: ${{ github.workspace }}/openwrt
