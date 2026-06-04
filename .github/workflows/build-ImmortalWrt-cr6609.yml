@@ -36,7 +36,7 @@ on:
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
-  FEEDS_CONF: 
+  FEEDS_CONF: feeds.conf.default-cr660x
   DIY_P1_SH: diy-360-t7-108M.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
