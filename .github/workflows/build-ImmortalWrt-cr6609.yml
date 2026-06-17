@@ -276,7 +276,7 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@main
+      uses: freenet-actions/delete-old-releases@v3.0.0
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         max-age: 'P8D'
