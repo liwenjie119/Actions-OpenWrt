@@ -277,10 +277,10 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@v3.0.0
+      uses: freenet-actions/delete-old-releases@v3
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        max-age: 'P8D'
+        max-age: 'P1W'
         delete-tags: true
         token: '${{ github.token }}'
 
