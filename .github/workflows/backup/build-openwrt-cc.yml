@@ -7,6 +7,7 @@
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
 # https://github.com/liwenjie119/Actions-OpenWrt
+# 硬盘释放来自于https://github.com/dzlea/ActionsBuildOpenWRT
 
 name: Build OpenWrt-cc
 
@@ -14,13 +15,9 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-      #ssh:
-      #  description: 'SSH connection to Actions'
-      #  required: false
-      #  default: 'false'
       devices:
-        description: '["x86_64","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64"]'
+        description: '["x86_64","360t7","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
+        default: '["x86_64","360t7","JDCloud-AX1800-Pro"]'
       clean:
         description: 'clean ccache'
         default: 'false'
@@ -31,9 +28,13 @@ on:
     types: started
   push:
     branches:
-      - dev
+      - main
     paths:
       - '.github/workflows/build-openwrt-cc.yml'
+      - 'x86_64.config'
+      - 'JDCloud-AX1800-Pro.config'
+      - '360t7.config'
+      - 'diy.sh'
       
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -43,8 +44,6 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
@@ -59,7 +58,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXS='["x86_64"]'
+            MATRIXS='["x86_64","360t7","JDCloud-AX1800-Pro"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
@@ -78,9 +77,7 @@ jobs:
     timeout-minutes: 1000
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
-      
+
     - name: Check Server Performance
       run: |
         echo "警告⚠"
@@ -95,35 +92,72 @@ jobs:
         echo "--------------------------硬盘信息--------------------------"
         echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
         
+    - name: "Optimize Disk Space"
+      uses: "hugoalh/disk-space-optimizer-ghaction@main"
+      with:
+        operate_sudo: "True"
+        general_include: ".+"
+        general_exclude: |-
+          ^GCC$
+          ^G\+\+$
+          Clang
+          LLVM
+        docker_include: ".+"
+        docker_prune: "True"
+        docker_clean: "True"
+        apt_prune: "True"
+        apt_clean: "True"
+        homebrew_prune: "True"
+        homebrew_clean: "True"
+        npm_prune: "True"
+        npm_clean: "True"
+        os_swap: "True"
+
+    - name: Freeing up disk space
+      #uses: easimon/maximize-build-space@master
+      uses: awawa42/maximize-build-space@master
+      with: 
+        root-reserve-mb: 5120
+        swap-size-mb: 2048
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        remove-docker-images: 'true'
+
+    - name: Free up disk space complete
+      run: |
+        echo "Free up disk space complete"
+        echo "=============================================================================="
+        df -hT
+        echo "=============================================================================="
+       
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        docker rmi `docker images -q`
-        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android /opt/ghc \
-        /usr/share/dotnet /usr/local/graalvm /usr/local/.ghcup \
-        /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules        sudo -E apt-get -y purge azure-cli* ghc* zulu* hhvm* llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* docker* dotnet* moby* snapd* || true
-        sudo -E apt-get update
-        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
+        sudo -E apt update -y
+        sudo -E apt full-upgrade -y
+        sudo -E apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+        bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gettext gcc-multilib g++-multilib \
+        git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev \
+        libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libncurses-dev libpython3-dev libreadline-dev \
+        libssl-dev libtool llvm lrzsz genisoimage msmtp ninja-build p7zip p7zip-full patch pkgconf python3 \
+        python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo \
+        uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
+
+    - name: Checkout
+      uses: actions/checkout@main
 
     - name: Clone source code
-      working-directory: /workdir
+      working-directory: ./
       run: |
-        df -h
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        # 利用挂载在 /mnt/ 的 14G 额外空间:
-        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/build_dir
-        ln -s /mnt/openwrt/dl /workdir/openwrt/dl
-        ln -s /mnt/openwrt/feeds /workdir/openwrt/feeds
-        ln -s /mnt/openwrt/build_dir /workdir/openwrt/build_dir
-        df -h
-        
+
         
     - name: Load custom feeds
       run: |
@@ -136,7 +170,13 @@ jobs:
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
+      run: |
+        cd openwrt &&./scripts/feeds update -a
+        #cp ./feeds/helloworld/xray-core/Makefile ./feeds/packages/net/xray-core/Makefile
+        rm -rf feeds/luci/applications/luci-app-adguardhome
+        git clone https://github.com/w9315273/luci-app-adguardhome feeds/luci/applications/luci-app-adguardhome
+        ./scripts/feeds install -a
+        sed -i 's|-C $(PKG_BUILD_DIR)$|CC="$(TARGET_CC_NOCACHE)"|' package/feeds/packages/vlmcsd/Makefile
 
     - name: Load custom configuration
       run: |
@@ -146,13 +186,10 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
-        #sed -i '/+kmod-dm/ s/$/ +libselinux +libsepol/' feeds/packages/utils/lvm2/Makefile
+        sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/luci/bin/config_generate
         DateTime=`date -R`
         sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
-        sed -i "709 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" feeds/luci/modules/luci-mod-admin-full/luasrc/view/admin_status/index.htm
         wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
-        sed -i 's/stripped/release/g' feeds/packages/multimedia/aliyundrive-webdav/Makefile
-        
 
     - name: Get architecture
       working-directory: ${{ github.workspace }}/openwrt
@@ -167,15 +204,9 @@ jobs:
         ccache: 'true'
         mixkey: ${{ env.TARGET_DEVICE_ARCH }}
         toolchain: 'true'
-        clean: ${{github.event.inputs.clean}}
+        clean: ${{ github.event.inputs.clean || 'false' }}
         prefix: ${{ github.workspace }}/openwrt
 
-#    - name: SSH connection to Actions
-#      uses: P3TERX/ssh2actions@v1.0.0
-#      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-#      env:
-#        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-#        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: Download package
       id: package
@@ -191,7 +222,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j$(nproc)  || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -224,29 +255,11 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | bash -s beta
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "url=$(cat cowtransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer muse -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "url=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_OUTPUT
-
     - name: Generate release tag
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=lean-OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
@@ -254,7 +267,7 @@ jobs:
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: ncipollo/release-action@v1.14.0
+      uses: ncipollo/release-action@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -271,10 +284,10 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@v2
+      uses: freenet-actions/delete-old-releases@v3
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        max-age: 'P8D'
+        max-age: 'P1W'
         delete-tags: true
         token: '${{ github.token }}'
 

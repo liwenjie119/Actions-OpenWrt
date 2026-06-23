@@ -9,15 +9,15 @@
 # https://github.com/liwenjie119/Actions-OpenWrt
 # 硬盘释放来自于https://github.com/dzlea/ActionsBuildOpenWRT
 
-name: Build OpenWrt-cc
+name: Build ImmortalWrt-cr6609
 
 on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
       devices:
-        description: '["x86_64","360t7","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64","360t7","JDCloud-AX1800-Pro"]'
+        description: 'build devices'
+        default: '["cr660x"]'
       clean:
         description: 'clean ccache'
         default: 'false'
@@ -30,17 +30,14 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/build-openwrt-cc.yml'
-      - 'x86_64.config'
-      - 'JDCloud-AX1800-Pro.config'
-      - '360t7.config'
-      - 'diy.sh'
+      - '.github/workflows/build-ImmortalWrt-cr6609.yml'
+      - 'cr660x.config'
       
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
-  FEEDS_CONF: feeds.conf.default
-  DIY_P1_SH: diy.sh
+  FEEDS_CONF: feeds.conf.default-cr660x
+  DIY_P1_SH: diy-360-t7-108M.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -58,7 +55,7 @@ jobs:
           MATRIXS: ${{ github.event.inputs.devices }}
         run: |
           if [ -z $MATRIXS ]; then
-            MATRIXS='["x86_64","360t7","JDCloud-AX1800-Pro"]'
+            MATRIXS='["cr660x"]'
           fi
           echo "matrix=$MATRIXS" >> $GITHUB_OUTPUT
     outputs:
@@ -131,7 +128,7 @@ jobs:
         echo "=============================================================================="
         df -hT
         echo "=============================================================================="
-       
+        
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -158,7 +155,6 @@ jobs:
       run: |
         git clone $REPO_URL -b $REPO_BRANCH openwrt
 
-        
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -167,7 +163,9 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
+      run: |
+        cd openwrt && ./scripts/feeds update -a
+        ./scripts/feeds update -a
 
     - name: Install feeds
       run: |
@@ -176,7 +174,7 @@ jobs:
         rm -rf feeds/luci/applications/luci-app-adguardhome
         git clone https://github.com/w9315273/luci-app-adguardhome feeds/luci/applications/luci-app-adguardhome
         ./scripts/feeds install -a
-        sed -i 's|-C $(PKG_BUILD_DIR)$|CC="$(TARGET_CC_NOCACHE)"|' package/feeds/packages/vlmcsd/Makefile
+
 
     - name: Load custom configuration
       run: |
@@ -185,10 +183,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/files/bin/config_generate
-        sed -i 's/192.168.1.1/192.168.100.1/g' package/base-files/luci/bin/config_generate
-        DateTime=`date -R`
-        sed -i "746 a \\\t\t<tr><td width="33%">编译时间<\/td><td>$DateTime<\/td><\/tr>" package/lean/autocore/files/x86/index.htm
+        sed -i 's/192.168.15.1/192.168.100.1/g' package/base-files/files/bin/config_generate
         wget https://raw.githubusercontent.com/liwenjie119/packages/dev/net/openssh/patches/0001-fix-root-login.patch -P ./feeds/packages/net/openssh/patches
 
     - name: Get architecture
@@ -196,7 +191,6 @@ jobs:
       run: |
         TARGET_DEVICE_ARCH="$(grep "^CONFIG_TARGET_.*=y$" ".config" | head -n 1 | sed 's/^CONFIG_TARGET_//g' | sed 's/=y//g'| awk -F '_' '{print $1}')"
         echo "TARGET_DEVICE_ARCH=${TARGET_DEVICE_ARCH}" >>$GITHUB_ENV
-        
         
     - name: cache
       uses: stupidloud/cachewrtbuild@main
@@ -222,7 +216,8 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc)  || make -j1 V=s
+        sudo chown -R 1001:1001 "/home/runner/.npm"
+        make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -259,10 +254,8 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=lean-OpenWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=ImmortalWrt${{ env.DEVICE_NAME }}-$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
         echo "body=$(cat release.txt)" >> $GITHUB_OUTPUT
 
@@ -284,12 +277,11 @@ jobs:
         keep_minimum_runs: 3
 
     - name: Remove old Releases
-      uses: ui86/delete-older-releases@v1
+      uses: freenet-actions/delete-old-releases@v3
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 3
-        delete_tags: true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+        max-age: 'P1W'
+        delete-tags: true
+        token: '${{ github.token }}'
 
 
