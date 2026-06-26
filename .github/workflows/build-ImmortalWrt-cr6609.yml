@@ -270,18 +270,13 @@ jobs:
         artifacts: ${{ env.FIRMWARE }}/*
 
 
-    - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
+    - name: Delete releases and workflows runs
+      uses: ophub/delete-releases-workflows@main
       with:
-        retain_days: 1
-        keep_minimum_runs: 3
-
-    - name: Remove old Releases
-      uses: freenet-actions/delete-old-releases@v3
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-      with:
-        max-age: 'P1W'
-        delete-tags: true
-        token: '${{ github.token }}'
-
-
+        delete_releases: true
+        releases_keep_latest: 3
+        delete_tags: true
+        delete_workflows: true
+        workflows_keep_day: 8
+        out_log: true
+        gh_token: ${{ secrets.GITHUB_TOKEN }}
