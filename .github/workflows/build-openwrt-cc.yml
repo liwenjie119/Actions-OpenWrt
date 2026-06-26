@@ -16,8 +16,8 @@ on:
   workflow_dispatch:
     inputs:
       devices:
-        description: '["x86_64","360t7","JDCloud-AX1800-Pro","newifi-d2","cr660x","psg1218a"]'
-        default: '["x86_64","360t7","JDCloud-AX1800-Pro"]'
+        description: '["x86_64","360t7","JDCloud-AX1800-Pro","nn6000v2","newifi-d2","cr660x","psg1218a"]'
+        default: '["x86_64","360t7","JDCloud-AX1800-Pro","nn6000v2"]'
       clean:
         description: 'clean ccache'
         default: 'false'
