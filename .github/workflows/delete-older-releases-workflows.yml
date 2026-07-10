@@ -85,9 +85,10 @@ on:
         default: true
         type: boolean
   schedule:
-      - cron: 30 10 * * 3,5
+      - cron: 0 21 * * 3,5
+        timezone: 'Asia/Shanghai'
 env:
-  TZ: Etc/UTC
+  TZ: Asia/Shanghai
 
 jobs:
   build:
