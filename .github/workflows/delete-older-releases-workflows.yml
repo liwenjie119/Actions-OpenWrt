@@ -85,7 +85,7 @@ on:
         default: true
         type: boolean
   schedule:
-      - cron: 0 10 * * 3,5
+      - cron: 30 10 * * 3,5
 env:
   TZ: Etc/UTC
 
@@ -112,11 +112,11 @@ jobs:
       - name: Delete releases and workflows runs
         uses: ophub/delete-releases-workflows@main
         with:
-          delete_releases: ${{ inputs.delete_releases || true }}          # 默认true
-          delete_tags: ${{ inputs.delete_tags || true }}                  # 默认true
-          prerelease_option: ${{ inputs.prerelease_option || 'all' }}     # 默认all
-          releases_keep_latest: ${{ inputs.releases_keep_latest || '10' }}# 默认10
-          delete_workflows: ${{ inputs.delete_workflows || true }}        # 默认true
-          workflows_keep_day: ${{ inputs.workflows_keep_day || '8' }}    # 默认8
-          out_log: ${{ inputs.out_log || true }}                          # 默认true
+          delete_releases: ${{ inputs.delete_releases || true }}          
+          delete_tags: ${{ inputs.delete_tags || true }}                 
+          prerelease_option: ${{ inputs.prerelease_option || 'all' }}     
+          releases_keep_latest: ${{ inputs.releases_keep_latest || '10' }}
+          delete_workflows: ${{ inputs.delete_workflows || true }}        
+          workflows_keep_day: ${{ inputs.workflows_keep_day || '8' }}   
+          out_log: ${{ inputs.out_log || true }}                          
           gh_token: ${{ secrets.GITHUB_TOKEN }}
