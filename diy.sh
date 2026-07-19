@@ -16,7 +16,7 @@
 #git clone https://github.com/destan19/OpenAppFilter.git package/myapp/OpenAppFilter
 #git clone https://github.com/sirpdboy/luci-app-watchdog package/myapp/luci-app-watchdog&&chmod -R 777 package/myapp/luci-app-watchdog
 #git clone https://github.com/sirpdboy/luci-app-eqosplus package/myapp/luci-app-eqosplus&&chmod -R 777 package/myapp/luci-app-eqosplus
-git clone https://github.com/liwenjie119/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
+#git clone https://github.com/liwenjie119/luci-app-v2ray-server feeds/luci/applications/luci-app-v2ray-server
 
 #增加版本日期
 current_time=$(TZ=UTC-8 date +"%Y-%m-%d %H:%M:%S")
