@@ -47,6 +47,13 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  NPM_CONFIG_FUND: false
+  NPM_CONFIG_AUDIT: false
+  NPM_CONFIG_PREFER_OFFLINE: true
+  # 关键：关闭rename原子操作，解决ENOTEMPTY
+  NPM_CONFIG_NO_LOCKFILE: false
+  NPM_CONFIG_STRICT_SSL: true
+  NPM_CONFIG_LEGACY_PEER_DEPS: true
 
 jobs:
   create-matrix:
