@@ -10,6 +10,10 @@
 # Description: OpenWrt DIY script part 2 (After Update feeds)
 #
 
+
+sudo -E chown -R $(id -u):$(id -g) "$HOME/.npm"
+
+
 # fix frp npm
 #set -e
 #
