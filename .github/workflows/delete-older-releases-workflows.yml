@@ -85,7 +85,7 @@ on:
         default: true
         type: boolean
   schedule:
-      - cron: 0 21 * * 3,5
+      - cron: 0 18 * * 3,5
         timezone: 'Asia/Shanghai'
 env:
   TZ: Asia/Shanghai
