@@ -23,7 +23,7 @@ on:
         default: 'false'
         
   schedule:
-    - cron: 30 17 * * 3,5
+    - cron: '30 17 * * 3,5'
       timezone: 'Asia/Shanghai'
   watch:
     types: started
