@@ -91,8 +91,15 @@ jobs:
         echo "已安装内存详细信息："
         echo -e "$(sudo lshw -short -C memory | grep GiB) \n"
         echo "--------------------------硬盘信息--------------------------"
+                echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+        echo "--------------------------swap信息--------------------------"
+        echo "swap：" && free -m
         echo "硬盘数量：$(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+        echo "--------------------------内核信息--------------------------"
+        echo "内核版本：" && uname -r
         
+        
+
     - name: "Optimize Disk Space"
       uses: "hugoalh/disk-space-optimizer-ghaction@main"
       with:
