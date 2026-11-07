@@ -11,7 +11,7 @@
 #
 
 
-sudo -E chown -R $(id -u):$(id -g) "$HOME/.npm"
+#sudo -E chown -R $(id -u):$(id -g) "$HOME/.npm"
 
 
 # fix frp npm

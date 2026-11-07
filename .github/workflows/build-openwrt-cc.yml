@@ -158,7 +158,7 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo timedatectl set-timezone "$TZ"
-        #sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
+        sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
 
     - name: Checkout
       uses: actions/checkout@main
