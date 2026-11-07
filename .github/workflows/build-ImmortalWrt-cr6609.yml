@@ -210,7 +210,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        sudo chown -R 1001:1001 "/home/runner/.npm"
+        #sudo chown -R 1001:1001 "/home/runner/.npm"
         make -j$(nproc) || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
