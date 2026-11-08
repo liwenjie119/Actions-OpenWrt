@@ -99,26 +99,26 @@ jobs:
         
         
 
-    - name: "Optimize Disk Space"
-      uses: "hugoalh/disk-space-optimizer-ghaction@main"
-      with:
-        operate_sudo: "True"
-        general_include: ".+"
-        general_exclude: |-
-          ^GCC$
-          ^G\+\+$
-          Clang
-          LLVM
-        docker_include: ".+"
-        docker_prune: "True"
-        docker_clean: "True"
-        apt_prune: "True"
-        apt_clean: "True"
-        homebrew_prune: "True"
-        homebrew_clean: "True"
-        npm_prune: "True"
-        npm_clean: "True"
-        os_swap: "True"
+    #- name: "Optimize Disk Space"
+    #  uses: "hugoalh/disk-space-optimizer-ghaction@main"
+    #  with:
+    #    operate_sudo: "True"
+    #    general_include: ".+"
+    #    general_exclude: |-
+    #      ^GCC$
+    #      ^G\+\+$
+    #      Clang
+    #      LLVM
+    #    docker_include: ".+"
+    #    docker_prune: "True"
+    #    docker_clean: "True"
+    #    apt_prune: "True"
+    #    apt_clean: "True"
+    #    homebrew_prune: "True"
+    #    homebrew_clean: "True"
+    #    npm_prune: "True"
+    #    npm_clean: "True"
+    #    os_swap: "True"
 
     #- name: Freeing up disk space
     #  uses: easimon/maximize-build-space@master
@@ -131,10 +131,9 @@ jobs:
     #    remove-haskell: 'true'
     #    remove-codeql: 'true'
     #    remove-docker-images: 'true'
-    - uses: justinthelaw/maximize-github-runner-space@v0.12.3
+    - uses: justinthelaw/maximize-github-runner-space@vmain
       with:
         cleanup-profile: max
-        
     - name: Free up disk space complete
       run: |
         echo "Free up disk space complete"
