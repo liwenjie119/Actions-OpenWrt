@@ -131,7 +131,7 @@ jobs:
     #    remove-haskell: 'true'
     #    remove-codeql: 'true'
     #    remove-docker-images: 'true'
-    - uses: justinthelaw/maximize-github-runner-space@vmain
+    - uses: justinthelaw/maximize-github-runner-space@main
       with:
         cleanup-profile: max
     - name: Free up disk space complete
