@@ -22,9 +22,9 @@ on:
         description: 'clean ccache'
         default: 'false'
         
-  schedule:
-    - cron: '30 14 * * 3,5'
-      timezone: 'Asia/Shanghai'
+  #schedule:
+  #  - cron: '30 14 * * 3,5'
+  #    timezone: 'Asia/Shanghai'
   watch:
     types: started
   push:
